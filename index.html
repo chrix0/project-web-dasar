@@ -160,8 +160,8 @@
 				this.signupDo = this.signupDo.bind(this)
 				this.logOut = this.logOut.bind(this);
 				this.state = { 
-					//Objek account terdiri dari 2 property : username, secret
-					accountList: [{username: "test", secret: "test"}],
+					//Objek account terdiri dari 3 property : username, secret, likedlist
+					accountList: [{username: "test", secret: "test", likedlist: []}],
 					loggedIn: false,
 					name: this.props.name
 				}
@@ -169,14 +169,15 @@
 			}
 			
 			loginCheck(event){
-				//Cek di array accountList apakah ada accountnya
-				//Tambah bbrp code di bawah ini kalau login sukses 
-				event.preventDefault()
+				event.preventDefault() //SELALU DI BARIS PERTAMA, jgn diubah posisinya
+				//Cek di array accountList apakah ada accountnya di sini
+				// *
+				// *
+				//Tambah bbrp baris code di bawah ini kalau login sukses (wajib ya)
 				var areaLogin = document.getElementById("accArea")
 				var greet = document.getElementById("greetingArea")
 				areaLogin.style.display = "none"
  				greet.style.display = "block"
-
 				this.setState({loggedIn: true})
 			}
 
