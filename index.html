@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Project Web</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+	<script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" async></script>
+	<script src="masonry.pkgd.min.js" async></script>
+	<script src="anime.es.js"></script>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<div id="app"></div>
+
+	<script type="text/babel" async>
+	
+		class PicBox extends React.Component {
+			constructor(props){
+				super()
+				this.state = {
+					liked: false,
+				}
+
+				this.toggleThis = this.toggleThis.bind(this);
+			}
+
+			toggleThis(){
+				if(this.props.loggedIn){
+					this.setState (likedState => ({
+						liked: !likedState.liked
+					}));
+				}
+				else{
+					alert("Silahkan log in terlebih dahulu")
+				}
+			}
+
+			render() {
+				return (
+					<div className="grid-item">
+						<img className="pic" src="./ph.png"/>
+						<div className="likeButton clickable"  onClick={this.toggleThis}>
+							<img src={this.state.liked? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
+						</div>
+					</div>
+				)
+			}
+		}
+	
+		class PicList extends React.Component {
+			render() {
+				return (
+					<div  id="listOfPics" className="picArea masonry-grid">
+						<div className="grid-sizer"></div>
+						<PicBox name="A" loggedIn={this.props.loggedIn}/>
+						<PicBox name="B" loggedIn={this.props.loggedIn}/>
+						<PicBox name="C" loggedIn={this.props.loggedIn}/>
+						<PicBox name="D" loggedIn={this.props.loggedIn}/>
+						<PicBox name="E" loggedIn={this.props.loggedIn}/>
+					</div>
+				)
+			}
+		}	
+	
+		//ReactDOM.render(<PicList/>, document.getElementById("pics"))
+
+		class Header extends React.Component {
+
+			constructor(props){
+				super()
+			}
+
+			handleClick(){
+				const sidecart = document.getElementById("sideBar")
+				sidecart.style.right = 0
+			}
+
+			render() {
+				return (
+					<div>
+						<h2 className="title">Project Pemrograman Web Dasar</h2>
+						<a id="basketButton" onClick={this.handleClick} className="clickable">
+							<img className="icon" src="likeListIcon.png"/>
+						</a>
+					</div>
+				)
+			}
+		}
+
+		//ReactDOM.render(<Header/>, document.getElementById("headerArea"))
+
+
+		class LikedItem extends React.Component{
+			constructor(props){
+				super()
+			}
+
+			deleteButtonClicked(){
+
+			}
+
+			render(){
+				return(
+					<div className="horizontal">
+						<img className="pic" src="./ph.png"/>
+						<a id="deleteButton" onClick={this.deleteButtonClicked} className="clickable">
+							<img className="icon" src="trash.png"/>
+						</a>
+					</div>
+				)
+			}
+		}
+
+		class Side extends React.Component{
+			constructor(props){
+				super()
+			}
+
+			closeSide(){
+				const sidecart = document.getElementById("sideBar")
+				sidecart.style.right = "-100%"
+			}
+
+			render() {
+				return (
+					<div>
+						<div className="headered">
+							<a id="closeSideCart" onClick={this.closeSide} className="clickable">
+								x
+							</a>
+						</div>
+						<div className="content">
+							<h3 className="sideTitle">Like List</h3>
+							<div className="masonry-grid">
+								<LikedItem name="A"/>
+								<LikedItem name="B"/>
+								<LikedItem name="C"/>
+								<LikedItem name="D"/>
+								<LikedItem name="E"/>
+							</div>
+						</div>
+					</div>
+				)
+			}
+		}
+		//ReactDOM.render(<Side/>, document.getElementById("sideBar"))
+
+		//ReactDOM.render(<Greetings name="guest"/>, document.getElementById("greetingArea"))
+
+		class App extends React.Component{
+			constructor(props){
+				super(props)
+				this.loginCheck = this.loginCheck.bind(this)
+				this.signupDo = this.signupDo.bind(this)
+				this.logOut = this.logOut.bind(this);
+				this.state = { 
+					//Objek account terdiri dari 2 property : username, secret
+					accountList: [{username: "test", secret: "test"}],
+					loggedIn: false,
+					name: this.props.name
+				}
+
+			}
+			
+			loginCheck(event){
+				//Cek di array accountList apakah ada accountnya
+				//Tambah bbrp code di bawah ini kalau login sukses 
+				event.preventDefault()
+				var areaLogin = document.getElementById("accArea")
+				var greet = document.getElementById("greetingArea")
+				areaLogin.style.display = "none"
+ 				greet.style.display = "block"
+
+				this.setState({loggedIn: true})
+			}
+
+			signupDo(){
+				//Buat objek accountnya
+			}
+
+			logOut(){
+				var areaLogin = document.getElementById("accArea")
+				var greet = document.getElementById("greetingArea")
+				areaLogin.style.display = "block"
+				greet.style.display = "none"
+
+				this.setState({loggedIn: false})
+			}
+
+			render() {
+				return (
+					<div>
+						<div className="container header" id="headerArea"><Header/></div>
+						<div className="container" id="greetingArea">
+							<div className="greeting">
+								Hello, {this.state.name}.
+								<br/>
+								<a id="logoutButton" href="#" onClick={this.logOut}>Log out</a>
+							</div>
+						</div>
+						<div className="container" id="accArea">
+							<form>
+								<div className="mb-3">
+									<label htmlFor="usernameInput" className="form-label">Username</label>
+									<input type="text" className="form-control" id="usernameInput" required/>
+								</div>
+								<div className="mb-3">
+									<label htmlFor="passwordInput" className="form-label">Password</label>
+									<input type="password" className="form-control" id="passwordInput" required/>
+								</div>
+								<button id="login" className="btn btn-primary buttonSizing" onClick={this.loginCheck}>Login</button>
+								<button id="signup" className="btn btn-primary buttonSizing" onClick={this.signupDo}>Signup</button>
+							</form>
+						</div>
+						<div className="container" id="pics"><PicList loggedIn={this.state.loggedIn}/></div>
+						<div id="sideBar"><Side/></div>
+					</div>
+				)
+			}
+		}
+
+		ReactDOM.render(<App name="Guest"/>, document.getElementById("app"))
+
+
+	</script>
+	<script src="index.js" async></script>
+
+</body>
+</html>
