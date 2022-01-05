@@ -10,16 +10,20 @@
 	<script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" async></script>
-	<script src="masonry.pkgd.min.js" async></script>
-	<script src="anime.es.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+	<script src="masonry.pkgd.min.js"></script>
 	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="hint.css">
 </head>
 <body>
 	<div id="app"></div>
 
 	<script type="text/babel" async>
-	
+		const univ = {
+			
+		}
+
 		class PicBox extends React.Component {
 			constructor(props){
 				super()
@@ -43,7 +47,7 @@
 
 			render() {
 				return (
-					<div className="grid-item">
+					<div className="grid-item hint--top hint--rounded" aria-label={this.props.name}>
 						<img className="pic" src="./ph.png"/>
 						<div className="likeButton clickable"  onClick={this.toggleThis}>
 							<img src={this.state.liked? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
@@ -58,11 +62,11 @@
 				return (
 					<div  id="listOfPics" className="picArea masonry-grid">
 						<div className="grid-sizer"></div>
-						<PicBox name="A" loggedIn={this.props.loggedIn}/>
-						<PicBox name="B" loggedIn={this.props.loggedIn}/>
-						<PicBox name="C" loggedIn={this.props.loggedIn}/>
-						<PicBox name="D" loggedIn={this.props.loggedIn}/>
-						<PicBox name="E" loggedIn={this.props.loggedIn}/>
+						<PicBox name="A" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
+						<PicBox name="B" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
+						<PicBox name="C" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
+						<PicBox name="D" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
+						<PicBox name="E" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
 					</div>
 				)
 			}
@@ -163,7 +167,8 @@
 					//Objek account terdiri dari 3 property : username, secret, likedlist
 					accountList: [{username: "test", secret: "test", likedlist: []}],
 					loggedIn: false,
-					name: this.props.name
+					name: this.props.name,
+					resetAll: false
 				}
 
 			}
@@ -178,7 +183,8 @@
 				var greet = document.getElementById("greetingArea")
 				areaLogin.style.display = "none"
  				greet.style.display = "block"
-				this.setState({loggedIn: true})
+				this.setState({loggedIn: true, resetAll: true})
+				this.setState({loggedIn: true, resetAll: false})
 			}
 
 			signupDo(){
@@ -219,7 +225,7 @@
 								<button id="signup" className="btn btn-primary buttonSizing" onClick={this.signupDo}>Signup</button>
 							</form>
 						</div>
-						<div className="container" id="pics"><PicList loggedIn={this.state.loggedIn}/></div>
+						<div className="container" id="pics"><PicList loggedIn={this.state.loggedIn} resetAll={this.state.resetAll}/></div>
 						<div id="sideBar"><Side/></div>
 					</div>
 				)
