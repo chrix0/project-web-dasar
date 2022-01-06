@@ -20,9 +20,6 @@
 	<div id="app"></div>
 
 	<script type="text/babel" async>
-		const univ = {
-			
-		}
 
 		class PicBox extends React.Component {
 			constructor(props){
@@ -39,6 +36,19 @@
 					this.setState (likedState => ({
 						liked: !likedState.liked
 					}));
+
+					if(!this.state.liked){
+						this.props.addToList({
+							name: this.props.name,
+							cmd: 'add'
+						})
+					}
+					else{
+						this.props.addToList({
+							name: this.props.name,
+							cmd: 'del'
+						})
+					}
 				}
 				else{
 					alert("Silahkan log in terlebih dahulu")
@@ -56,22 +66,7 @@
 				)
 			}
 		}
-	
-		class PicList extends React.Component {
-			render() {
-				return (
-					<div  id="listOfPics" className="picArea masonry-grid">
-						<div className="grid-sizer"></div>
-						<PicBox name="A" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
-						<PicBox name="B" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
-						<PicBox name="C" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
-						<PicBox name="D" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
-						<PicBox name="E" loggedIn={this.props.loggedIn} resetAll={this.props.resetAll}/>
-					</div>
-				)
-			}
-		}	
-	
+
 		//ReactDOM.render(<PicList/>, document.getElementById("pics"))
 
 		class Header extends React.Component {
@@ -163,9 +158,12 @@
 				this.loginCheck = this.loginCheck.bind(this)
 				this.signupDo = this.signupDo.bind(this)
 				this.logOut = this.logOut.bind(this);
+				this.addToList = this.addToList.bind(this)
 				this.state = { 
 					//Objek account terdiri dari 3 property : username, secret, likedlist
 					accountList: [{username: "test", secret: "test", likedlist: []}],
+					curLoggedIn: -1, //Sesuaikan dengan indeks. -1 berarti tidak ada yang sedang login
+					dummyLikeList: [],
 					loggedIn: false,
 					name: this.props.name,
 					resetAll: false
@@ -183,8 +181,10 @@
 				var greet = document.getElementById("greetingArea")
 				areaLogin.style.display = "none"
  				greet.style.display = "block"
-				this.setState({loggedIn: true, resetAll: true})
-				this.setState({loggedIn: true, resetAll: false})
+
+				//Jangan lupa isi nilai indeks yang sedang login juga
+				//Sebagai contoh, yang sedang login adalah acc dengan indeks 0
+				this.setState({loggedIn: true, curLoggedIn: 0})
 			}
 
 			signupDo(){
@@ -197,7 +197,38 @@
 				areaLogin.style.display = "block"
 				greet.style.display = "none"
 
-				this.setState({loggedIn: false})
+				//pastikan nilai curLoggedIn dibalikkan ke -1
+				this.setState({loggedIn: false, curLoggedIn: -1})
+			}
+
+			addToList(item){
+				//buat array copy dari accountlist
+				let newList = [...this.state.accountList]
+				//buat object copy yang terpilih di dalam newList
+				let acc = {...newList[this.state.curLoggedIn]}
+
+				if(item.cmd == 'add'){
+					acc.likedlist.push(item)
+				}
+				else{ //'del'
+					let idx = acc.likedlist.findIndex(i => i.name == item.name)
+					//alert("index yang diambil " + idx)
+					acc.likedlist.splice(idx, 1)
+				}
+
+				//Replace..
+				newList[this.state.curLoggedIn] = acc
+
+				//2nd parameter for checking purpose only. WARNING: setState bekerja secara async
+				//Parameter kedua gak perlu ditulis, kecuali mau lihat isi statenya yang udh diubah.
+				this.setState({accountList: newList}, () => {
+					var result = this.state.accountList[this.state.curLoggedIn].likedlist
+					var list = []
+					for(var i = 0; i < result.length; i++){
+						list.push(result[i].name)
+					}
+					alert(list)
+				})
 			}
 
 			render() {
@@ -225,7 +256,20 @@
 								<button id="signup" className="btn btn-primary buttonSizing" onClick={this.signupDo}>Signup</button>
 							</form>
 						</div>
-						<div className="container" id="pics"><PicList loggedIn={this.state.loggedIn} resetAll={this.state.resetAll}/></div>
+
+						<div className="container" id="pics">
+							
+							<div id="listOfPics" className="picArea masonry-grid">
+								<div className="grid-sizer"></div>
+								<PicBox name="D" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
+								<PicBox name="C" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
+								<PicBox name="B" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
+								<PicBox name="E" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
+								<PicBox name="A" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
+							</div>
+
+						</div>
+
 						<div id="sideBar"><Side/></div>
 					</div>
 				)
@@ -233,7 +277,6 @@
 		}
 
 		ReactDOM.render(<App name="Guest"/>, document.getElementById("app"))
-
 
 	</script>
 	<script src="index.js" async></script>
