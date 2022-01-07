@@ -18,9 +18,8 @@
 </head>
 <body>
 	<div id="app"></div>
-
-	<script type="text/babel" async>
-
+	<script src="index.js" async></script>
+	<script type="text/babel">
 		class PicBox extends React.Component {
 			constructor(props){
 				super()
@@ -99,18 +98,10 @@
 			constructor(props){
 				super()
 			}
-
-			deleteButtonClicked(){
-
-			}
-
 			render(){
 				return(
 					<div className="horizontal">
 						<img className="pic" src="./ph.png"/>
-						<a id="deleteButton" onClick={this.deleteButtonClicked} className="clickable">
-							<img className="icon" src="trash.png"/>
-						</a>
 					</div>
 				)
 			}
@@ -152,6 +143,17 @@
 
 		//ReactDOM.render(<Greetings name="guest"/>, document.getElementById("greetingArea"))
 
+		class Greetings extends React.Component{
+			render(){
+				return(
+					<div className="greeting">
+						Hello, {this.props.name}.
+						<br/>
+					</div>
+				)
+			}
+		}
+
 		class App extends React.Component{
 			constructor(props){
 				super(props)
@@ -159,6 +161,7 @@
 				this.signupDo = this.signupDo.bind(this)
 				this.logOut = this.logOut.bind(this);
 				this.addToList = this.addToList.bind(this)
+
 				this.state = { 
 					//Objek account terdiri dari 3 property : username, secret, likedlist
 					accountList: [{username: "test", secret: "test", likedlist: []}],
@@ -173,68 +176,76 @@
 			
 			loginCheck(event){
 				event.preventDefault() //SELALU DI BARIS PERTAMA, jgn diubah posisinya
-				//Cek di array accountList apakah ada accountnya di sini
-				// *
-				// *
-				//Tambah bbrp baris code di bawah ini kalau login sukses (wajib ya)
+				
 				let username = document.getElementById("usernameInput").value
 				let secret = document.getElementById("passwordInput").value
-				
-				let found = false
-				this.state.accountList.forEach ((value,i)=>{
-					if(value.username== username && value.secret==secret)
-					{
-						var areaLogin = document.getElementById("accArea")
-						var greet = document.getElementById("greetingArea")
-						areaLogin.style.display = "none"
- 						greet.style.display = "block"
-						this.setState({
-							loggedIn:true,
-							curLoggedIn:i,
-							name: username
-						})
-						found =true
-						alert("login berhasil")
-					}
-					
-				})
-				if (!found){
-					alert("username atau password salah")
-				}
-				
 
-				//Jangan lupa isi nilai indeks yang sedang login juga
-				//Sebagai contoh, yang sedang login adalah acc dengan indeks 0
-				
+				if(username === "" || secret === ""){
+					alert("Isi username dan password terlebih dahulu")
+					return false
+				}
+				else{
+					let found = false
+					this.state.accountList.forEach((value,i)=>{
+						if(value.username === username && value.secret === secret)
+						{
+							var areaLogin = document.getElementById("accArea")
+							var greet = document.getElementById("greetingArea")
+							areaLogin.style.display = "none"
+							 greet.style.display = "block"
+							this.setState({loggedIn: true, curLoggedIn: i, name: value.username})
+							found = true
+							alert("login berhasil")
+						}
+					})
+	
+					if (!found){
+						alert("username atau password salah")
+					}	
+				}
 			}
 
-			signupDo() {
-				const newUser = {
-					username : document.getElementById("usernameInput").value, 
-					secret : document.getElementById("passwordInput").value,
-					likedlist : []
-				}
-				let isRegistered = false
-				this.state.accountList.map((val,i)=> {
-					if(val.username === newUser.username ){
-						isRegistered = true
-					}
-				})
-				console.log(this.state.accountList)
+			signupDo(event) {
+				event.preventDefault()
 
-				if (!isRegistered){
-						this.setState(currentState => {
-							alert("berhasil menambahkan akun")
-							let newAccountList = currentState.accountList;
-							newAccountList.push(newUser);
-						return {
-							accountList: newAccountList,
-						}				
-					})
-				}else {
-					alert("akun sudah terdaftar")
+				let username = document.getElementById("usernameInput").value
+				let secret = document.getElementById("passwordInput").value
+
+				if(username === "" || secret === ""){
+					alert("Isi username dan password terlebih dahulu")
+					return false
 				}
-				console.log(this.state.accountList)	
+				else{
+					const newUser = {
+						username : username, 
+						secret : secret,
+						likedlist : []
+					}
+	
+					let isRegistered = false
+	
+					this.state.accountList.map((val,i)=> {
+						if(val.username === newUser.username ){
+							isRegistered = true
+						}
+					})
+	
+					console.log(this.state.accountList)
+	
+					if (!isRegistered){
+							this.setState(currentState => {
+								alert("berhasil menambahkan akun")
+								let newAccountList = currentState.accountList;
+								newAccountList.push(newUser);
+							return {
+								accountList: newAccountList,
+							}				
+						})
+					}else {
+						alert("akun sudah terdaftar")
+					}
+					console.log(this.state.accountList)	
+				}
 			}
 
 			logOut(){
@@ -245,6 +256,8 @@
 
 				//pastikan nilai curLoggedIn dibalikkan ke -1
 				this.setState({loggedIn: false, curLoggedIn: -1})
+				//ReactDOM.render(this.showlist(), document.getElementById("pics"))
+				                                                                                    
 			}
 
 			addToList(item){
@@ -282,11 +295,8 @@
 					<div>
 						<div className="container header" id="headerArea"><Header/></div>
 						<div className="container" id="greetingArea">
-							<div className="greeting">
-								Hello, {this.state.name}.
-								<br/>
-								<a id="logoutButton" href="#" onClick={this.logOut}>Log out</a>
-							</div>
+							<Greetings name={this.state.name}/>
+							<a id="logoutButton" href="#" onClick={this.logOut}>Log out</a>
 						</div>
 						<div className="container" id="accArea">
 							<form>
@@ -304,7 +314,6 @@
 						</div>
 
 						<div className="container" id="pics">
-							
 							<div id="listOfPics" className="picArea masonry-grid">
 								<div className="grid-sizer"></div>
 								<PicBox name="D" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
@@ -313,7 +322,6 @@
 								<PicBox name="E" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
 								<PicBox name="A" loggedIn={this.state.loggedIn} addToList={this.addToList}/>
 							</div>
-
 						</div>
 
 						<div id="sideBar"><Side/></div>
@@ -325,7 +333,6 @@
 		ReactDOM.render(<App name="Guest"/>, document.getElementById("app"))
 
 	</script>
-	<script src="index.js" async></script>
 
 </body>
 </html>
