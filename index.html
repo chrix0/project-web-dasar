@@ -177,18 +177,64 @@
 				// *
 				// *
 				//Tambah bbrp baris code di bawah ini kalau login sukses (wajib ya)
-				var areaLogin = document.getElementById("accArea")
-				var greet = document.getElementById("greetingArea")
-				areaLogin.style.display = "none"
- 				greet.style.display = "block"
+				let username = document.getElementById("usernameInput").value
+				let secret = document.getElementById("passwordInput").value
+				
+				let found = false
+				this.state.accountList.forEach ((value,i)=>{
+					if(value.username== username && value.secret==secret)
+					{
+						var areaLogin = document.getElementById("accArea")
+						var greet = document.getElementById("greetingArea")
+						areaLogin.style.display = "none"
+ 						greet.style.display = "block"
+						this.setState({
+							loggedIn:true,
+							curLoggedIn:i,
+							name: username
+						})
+						found =true
+						alert("login berhasil")
+					}
+					
+				})
+				if (!found){
+					alert("username atau password salah")
+				}
+				
 
 				//Jangan lupa isi nilai indeks yang sedang login juga
 				//Sebagai contoh, yang sedang login adalah acc dengan indeks 0
-				this.setState({loggedIn: true, curLoggedIn: 0})
+				
 			}
 
-			signupDo(){
-				//Buat objek accountnya
+			signupDo() {
+				const newUser = {
+					username : document.getElementById("usernameInput").value, 
+					secret : document.getElementById("passwordInput").value,
+					likedlist : []
+				}
+				let isRegistered = false
+				this.state.accountList.map((val,i)=> {
+					if(val.username === newUser.username ){
+						isRegistered = true
+					}
+				})
+				console.log(this.state.accountList)
+
+				if (!isRegistered){
+						this.setState(currentState => {
+							alert("berhasil menambahkan akun")
+							let newAccountList = currentState.accountList;
+							newAccountList.push(newUser);
+						return {
+							accountList: newAccountList,
+						}				
+					})
+				}else {
+					alert("akun sudah terdaftar")
+				}
+				console.log(this.state.accountList)	
 			}
 
 			logOut(){
@@ -254,7 +300,7 @@
 								</div>
 								<button id="login" className="btn btn-primary buttonSizing" onClick={this.loginCheck}>Login</button>
 								<button id="signup" className="btn btn-primary buttonSizing" onClick={this.signupDo}>Signup</button>
-							</form>
+							</form>	
 						</div>
 
 						<div className="container" id="pics">
