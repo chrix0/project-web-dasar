@@ -37,20 +37,24 @@
 						liked: !likedState.liked
 					}));
 
+					console.log("Props: ", this.props)
+
 					if(!this.state.liked){
 						this.props.addToList({
 							//TASK 1 - Tampilkan isi likelist di sidebar
 							//TASK 1.1
 							//Ini bakal jadi isi property dari objek array likedlist.
-
+							
+							image : this.props.urlPic,
 							//TODO: Tambah properti id dan url gambar
 							name: this.props.name,
 							cmd: 'add'
-						})
+						}, )
 					}
 					else{
 						this.props.addToList({
 							//TODO: Tambah properti id dan url gambar
+							image : this.props.urlPic,
 							name: this.props.name,
 							cmd: 'del'
 						})
@@ -66,7 +70,7 @@
 					<div className="grid-item hint--top hint--rounded" aria-label={"author: " + this.props.name}>
 						<img className="pic" src={this.props.urlPic}/>
 						<div className="likeButton clickable"  onClick={this.toggleThis}>
-							<img src={this.state.liked? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
+							<img src={this.state.liked ? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
 						</div>
 					</div>
 				)
@@ -112,7 +116,7 @@
 				//(Pastikan task pertama udh siap dulu ya)
 				return(
 					<div>
-						<img className="pic" src="./ph.png"/>
+						<img className="pic" src={this.props.image}/>
 					</div>
 				)
 			}
@@ -121,6 +125,11 @@
 		class Side extends React.Component{
 			constructor(props){
 				super()
+				console.log("Aku disini:", props)
+			}
+
+			componentDidUpdate() {
+				console.log("Aku disini a:", this.props)
 			}
 
 			closeSide(){
@@ -139,17 +148,31 @@
 						<div className="content">
 							<h3 className="sideTitle">Like List</h3>
 							<div className="masonry-grid">
-								<LikedItem name="A"/>
-								<LikedItem name="B"/>
-								<LikedItem name="C"/>
-								<LikedItem name="D"/>
-								<LikedItem name="E"/>
+								<LikedList list={this.props?.list}/>
 							</div>
 						</div>
 					</div>
 				)
 			}
 		}
+		class LikedList extends React.Component{
+			constructor(props){
+				super()
+			}
+
+			render() {
+				return (
+					<div> 
+					{
+						this.props.list?.map((e) => {
+							return <LikedItem key={e.image} name={e.name} image={e.image} />
+						})
+					}
+					</div>
+				)				
+			}
+		}
+		
 		//ReactDOM.render(<Side/>, document.getElementById("sideBar"))
 
 		//ReactDOM.render(<Greetings name="guest"/>, document.getElementById("greetingArea"))
@@ -369,7 +392,6 @@
 					for(var i = 0; i < result.length; i++){
 						list.push(result[i].name)
 					}
-					alert(list)
 				})
 			}
 			
@@ -403,7 +425,7 @@
 							</div>
 						</div>
 
-						<div id="sideBar"><Side/></div>
+						<div id="sideBar"><Side list={this.state.accountList[this.state.curLoggedIn]?.likedlist}/></div>
 					</div>
 				)
 			}
@@ -416,6 +438,7 @@
 		//Buat sebuah komponen baru yang menampung list yang isinya komponen LikedItem.
 		//Komponen ini mengubah array likedlist dari account yang sedang login menjadi kumpulan komponen likedItem
 		//Tampilkan komponen tersebut di dalam komponen dengan nama Side.
+
 	</script>
 </body>
 </html>
