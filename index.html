@@ -33,19 +33,14 @@
 
 					if(!this.props.liked){
 						this.props.addToList({
-							//TASK 1 - Tampilkan isi likelist di sidebar
-							//TASK 1.1
-							//Ini bakal jadi isi property dari objek array likedlist.
 							idimage: this.props.idimage,
 							image : this.props.urlPic,
-							//TODO: Tambah properti id dan url gambar
 							name: this.props.name,
 							cmd: 'add'
 						})
 					}
 					else{
 						this.props.addToList({
-							//TODO: Tambah properti id dan url gambar
 							idimage: this.props.idimage,
 							image : this.props.urlPic,
 							name: this.props.name,
@@ -70,8 +65,6 @@
 			}
 		}
 
-		//ReactDOM.render(<PicList/>, document.getElementById("pics"))
-
 		class Header extends React.Component {
 
 			constructor(props){
@@ -95,18 +88,11 @@
 			}
 		}
 
-		//ReactDOM.render(<Header/>, document.getElementById("headerArea"))
-
-
 		class LikedItem extends React.Component{
 			constructor(props){
 				super()
 			}
 			render(){
-				//TASK 1.2
-				//TODO: Munculkan gambarnya dengan url tadi.
-				//Hint: Gunakan props, nanti panggil pas di pembentukannya (blm skrg).
-				//(Pastikan task pertama udh siap dulu ya)
 				return(
 					<div>
 						<img className="pic" src={this.props.image}/>
@@ -118,7 +104,6 @@
 		class Side extends React.Component{
 			constructor(props){
 				super()
-				console.log("Isi sidebar:", props)
 			}
 
 			componentDidUpdate() {
@@ -165,10 +150,6 @@
 				)				
 			}
 		}
-		
-		//ReactDOM.render(<Side/>, document.getElementById("sideBar"))
-
-		//ReactDOM.render(<Greetings name="guest"/>, document.getElementById("greetingArea"))
 
 		class Greetings extends React.Component{
 			render(){
@@ -202,7 +183,6 @@
 				setTimeout(() =>{
 					var container = document.querySelector('.masonry-grid');
 					var msnry = new Masonry( container, {
-					  // options
 					  columnWidth: '.grid-sizer',
 					  itemSelector: '.grid-item',
 					  percentPosition: true
@@ -258,7 +238,7 @@
 			}
 			
 			loginCheck(event){
-				event.preventDefault() //SELALU DI BARIS PERTAMA, jgn diubah posisinya
+				event.preventDefault() 
 				
 				let username = document.getElementById("usernameInput").value
 				let secret = document.getElementById("passwordInput").value
@@ -282,7 +262,6 @@
 							
 							let copy = []
 							copy = [...this.state.initPictures]
-							console.log(copy)
 
 							value.likedlist.forEach((liked, i ) => {
 								let idx = this.state.pictures.findIndex( i => i.obj.id == liked.idimage)
@@ -290,32 +269,18 @@
 									copy[idx].isLiked = true
 								}
 							})
-
 							this.setState({
 								pictures: copy
 							})
-
-							console.log(this.state.pictures)
 						}
 					})
-	
 					if (!found){
 						alert("username atau password salah")
-					}	
+					}
 				}
-
-				//TASK 3 - Coded Toggling + Reset toggle
-				//[Me saran kerjain yg bagian log out (3.1) dulu] 
-				
-				//TASK 3.2
-				//TODO: Setiap kali login ditekan, ubah semua nilai properti isLiked pada semua objek 
-				//dalam pictures diubah dengan cara berikut:
-				//1. Bandingkan isi likelist (dalam object account) dengan state pictures (property dgn nama obj)
-				//2. Kalau id dua objeknya sama, beri true pada isLiked di object yg di state pictures tadi.
-				//3. Kalau tidak sama, gak perlu diubah.
 			}
 
-			signupDo(event) {
+			signupDo(event){
 				event.preventDefault()
 
 				let username = document.getElementById("usernameInput").value
@@ -340,7 +305,6 @@
 						}
 					})
 	
-					console.log(this.state.accountList)
 	
 					if (!isRegistered){
 							this.setState(currentState => {
@@ -354,7 +318,6 @@
 					}else {
 						alert("akun sudah terdaftar")
 					}
-					console.log(this.state.accountList)	
 				}
 			}
 
@@ -373,13 +336,8 @@
 				//pastikan nilai curLoggedIn dibalikkan ke -1
 				this.setState({loggedIn: false, curLoggedIn: -1, pictures: copy})
 				this.forceUpdate()
-				//ReactDOM.render(this.showlist(), document.getElementById("pics"))
-				console.log(this.state.pictures)
-				//[Me saran kerjain ini dulu baru yang login]
-				//TASK 3.1
-				//TODO: Setiap kali logout ditekan, ubah 
-				//semua properti isLiked pada semua objek dalam prop obj pada state pictures menjadi false
 
+				console.log(this.state.pictures)
 			}
 
 			addToList(item){
@@ -399,37 +357,25 @@
 					acc.likedlist.push(item)
 				}
 				else{ //'del'
-
-					//TASK 2 - Delete by ID
-					//Cek dulu code togglethis di component picbox
-					//TODO: Buat proses menghapusnya berdasarkan ID.
-					//Untuk sekarang masih menggunakan name..
-					//Pastikan task yang pertama selesai dulu.
-
 					let copy = [...this.state.pictures]
 					let idxpictures = copy.findIndex(i => i.obj.id == item.idimage)
 					copy[idxpictures].isLiked = false
 					this.setState({
 						pictures: copy
 					})
-
 					let idx = acc.likedlist.findIndex(i => i.idimage == item.idimage)
-					//alert("index yang diambil " + idx)
 					acc.likedlist.splice(idx, 1)
 				}
 
 				//Replace..
 				newList[this.state.curLoggedIn] = acc
 
-				//2nd parameter for checking purpose only. WARNING: setState bekerja secara async
-				//Parameter kedua gak perlu ditulis, kecuali mau lihat isi statenya yang udh diubah.
 				this.setState({accountList: newList}, () => {
 					var result = this.state.accountList[this.state.curLoggedIn].likedlist
 					var list = []
 					for(var i = 0; i < result.length; i++){
 						list.push(result[i].name)
 					}
-					
 				})
 			}
 			
