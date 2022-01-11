@@ -24,36 +24,29 @@
 		class PicBox extends React.Component {
 			constructor(props){
 				super()
-				this.state = {
-					liked: props.liked,
-				}
-
 				this.toggleThis = this.toggleThis.bind(this);
 			}
 
 			toggleThis(){
 				if(this.props.loggedIn){
-					this.setState (likedState => ({
-						liked: !likedState.liked
-					}));
-
 					console.log("Props: ", this.props)
 
-					if(!this.state.liked){
+					if(!this.props.liked){
 						this.props.addToList({
 							//TASK 1 - Tampilkan isi likelist di sidebar
 							//TASK 1.1
 							//Ini bakal jadi isi property dari objek array likedlist.
-							
+							idimage: this.props.idimage,
 							image : this.props.urlPic,
 							//TODO: Tambah properti id dan url gambar
 							name: this.props.name,
 							cmd: 'add'
-						}, )
+						})
 					}
 					else{
 						this.props.addToList({
 							//TODO: Tambah properti id dan url gambar
+							idimage: this.props.idimage,
 							image : this.props.urlPic,
 							name: this.props.name,
 							cmd: 'del'
@@ -70,7 +63,7 @@
 					<div className="grid-item hint--top hint--rounded" aria-label={"author: " + this.props.name}>
 						<img className="pic" src={this.props.urlPic}/>
 						<div className="likeButton clickable"  onClick={this.toggleThis}>
-							<img src={this.state.liked ? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
+							<img src={this.props.liked ? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
 						</div>
 					</div>
 				)
@@ -125,11 +118,11 @@
 		class Side extends React.Component{
 			constructor(props){
 				super()
-				console.log("Aku disini:", props)
+				console.log("Isi sidebar:", props)
 			}
 
 			componentDidUpdate() {
-				console.log("Aku disini a:", this.props)
+				console.log("Isi sidebar berubah:", this.props)
 			}
 
 			closeSide(){
@@ -191,13 +184,17 @@
 		class PicList extends React.Component{
 			constructor(props){
 				super(props)
-				
 			}
 			render(){
 				return(
-					this.props.pictures.map((val) => {
-						return <PicBox key={val.obj.id} name={val.obj.author} urlPic={val.obj.download_url} liked={val.isLiked} loggedIn={this.props.loggedIn} addToList={this.props.addToList}/>
-					})
+					<div>
+						{
+							this.props.pictures.map((val) => {
+								return <PicBox key={val.obj.id} idimage={val.obj.id} name={val.obj.author} urlPic={val.obj.download_url} liked={val.isLiked} loggedIn={this.props.loggedIn} addToList={this.props.addToList}/>
+							})
+						}
+					</div>
+					
 				)
 			}
 			//Code setelah render
@@ -220,7 +217,6 @@
 					function progress(instance, image){
 						var result = image.isLoaded ? 'loaded' : 'broken';
 						console.log( 'image is ' + result + ' for ' + image.img.src );
-						msnry.layout()
 					}
 	
 					imgLoad.on('always', onAlways)
@@ -244,9 +240,11 @@
 					dummyLikeList: [],
 					loggedIn: false,
 					name: this.props.name,
-					pictures: []
+					pictures: [], 
+					initPictures: [] 
 				}
-
+				//Pictures merupakan kondisi yang dilihat user
+				//initPictures merupakan kondisi awal dimana semua pic memiliki nilai liked = false (isinya tidak akan diubah)
 				axios.get("https://picsum.photos/v2/list").then(
 					res => {
 						let newPicList = []
@@ -254,7 +252,7 @@
 							let picObject = {obj: val, isLiked: false}
 							newPicList.push(picObject)
 						})
-						this.setState({pictures: newPicList})
+						this.setState({pictures: newPicList, initPictures: newPicList})
 					}
 				)
 			}
@@ -281,6 +279,23 @@
 							this.setState({loggedIn: true, curLoggedIn: i, name: value.username})
 							found = true
 							alert("login berhasil")
+							
+							let copy = []
+							copy = [...this.state.initPictures]
+							console.log(copy)
+
+							value.likedlist.forEach((liked, i ) => {
+								let idx = this.state.pictures.findIndex( i => i.obj.id == liked.idimage)
+								if(idx != -1){
+									copy[idx].isLiked = true
+								}
+							})
+
+							this.setState({
+								pictures: copy
+							})
+
+							console.log(this.state.pictures)
 						}
 					})
 	
@@ -349,15 +364,22 @@
 				areaLogin.style.display = "block"
 				greet.style.display = "none"
 
+			
+				let copy = [...this.state.pictures]
+				copy.forEach((val, i) =>{
+					copy[i].isLiked = false
+				})
+
 				//pastikan nilai curLoggedIn dibalikkan ke -1
-				this.setState({loggedIn: false, curLoggedIn: -1})
+				this.setState({loggedIn: false, curLoggedIn: -1, pictures: copy})
+				this.forceUpdate()
 				//ReactDOM.render(this.showlist(), document.getElementById("pics"))
-				
-				
+				console.log(this.state.pictures)
 				//[Me saran kerjain ini dulu baru yang login]
 				//TASK 3.1
 				//TODO: Setiap kali logout ditekan, ubah 
 				//semua properti isLiked pada semua objek dalam prop obj pada state pictures menjadi false
+
 			}
 
 			addToList(item){
@@ -367,6 +389,13 @@
 				let acc = {...newList[this.state.curLoggedIn]}
 
 				if(item.cmd == 'add'){
+					let copy = [...this.state.pictures]
+					let idxpictures = copy.findIndex(i => i.obj.id == item.idimage)
+					copy[idxpictures].isLiked = true
+					this.setState({
+						pictures: copy
+					})
+
 					acc.likedlist.push(item)
 				}
 				else{ //'del'
@@ -376,7 +405,15 @@
 					//TODO: Buat proses menghapusnya berdasarkan ID.
 					//Untuk sekarang masih menggunakan name..
 					//Pastikan task yang pertama selesai dulu.
-					let idx = acc.likedlist.findIndex(i => i.name == item.name)
+
+					let copy = [...this.state.pictures]
+					let idxpictures = copy.findIndex(i => i.obj.id == item.idimage)
+					copy[idxpictures].isLiked = false
+					this.setState({
+						pictures: copy
+					})
+
+					let idx = acc.likedlist.findIndex(i => i.idimage == item.idimage)
 					//alert("index yang diambil " + idx)
 					acc.likedlist.splice(idx, 1)
 				}
@@ -392,6 +429,7 @@
 					for(var i = 0; i < result.length; i++){
 						list.push(result[i].name)
 					}
+					
 				})
 			}
 			
