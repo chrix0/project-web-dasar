@@ -19,8 +19,30 @@
 </head>
 <body>
 	<div id="app"></div>
-	<script src="index.js"></script>
-	<script type="text/babel" defer>
+	<script type="text/babel">
+		class Header extends React.Component {
+
+			constructor(props){
+				super()
+			}
+
+			handleClick(){
+				const sidebar= document.getElementById("sideBar")
+				sidebar.style.right = 0 //Sebelumnya -100%
+			}
+
+			render() {
+				return (
+					<div>
+						<h2 className="title">Project Pemrograman Web Dasar</h2>
+						<a onClick={this.handleClick} className="clickable">
+							<img className="icon" src="likeListIcon.png"/>
+						</a>
+					</div>
+				)
+			}
+		}
+
 		class PicBox extends React.Component {
 			constructor(props){
 				super()
@@ -29,14 +51,12 @@
 
 			toggleThis(){
 				if(this.props.loggedIn){
-					console.log("Props: ", this.props)
-
 					if(!this.props.liked){
 						this.props.addToList({
 							idimage: this.props.idimage,
 							image : this.props.urlPic,
 							name: this.props.name,
-							cmd: 'add'
+							cmd: 'add' //tambahkan ke like list
 						})
 					}
 					else{
@@ -44,7 +64,7 @@
 							idimage: this.props.idimage,
 							image : this.props.urlPic,
 							name: this.props.name,
-							cmd: 'del'
+							cmd: 'del' //hapus dari like list
 						})
 					}
 				}
@@ -60,103 +80,6 @@
 						<div className="likeButton clickable"  onClick={this.toggleThis}>
 							<img src={this.props.liked ? 'thumb-up.png' : 'thumb-up-outline.png'} id="toggle" className="smallerIcon"/>
 						</div>
-					</div>
-				)
-			}
-		}
-
-		class Header extends React.Component {
-
-			constructor(props){
-				super()
-			}
-
-			handleClick(){
-				const sidecart = document.getElementById("sideBar")
-				sidecart.style.right = 0
-			}
-
-			render() {
-				return (
-					<div>
-						<h2 className="title">Project Pemrograman Web Dasar</h2>
-						<a id="basketButton" onClick={this.handleClick} className="clickable">
-							<img className="icon" src="likeListIcon.png"/>
-						</a>
-					</div>
-				)
-			}
-		}
-
-		class LikedItem extends React.Component{
-			constructor(props){
-				super()
-			}
-			render(){
-				return(
-					<div>
-						<img className="pic" src={this.props.image}/>
-					</div>
-				)
-			}
-		}
-
-		class Side extends React.Component{
-			constructor(props){
-				super()
-			}
-
-			componentDidUpdate() {
-				console.log("Isi sidebar berubah:", this.props)
-			}
-
-			closeSide(){
-				const sidecart = document.getElementById("sideBar")
-				sidecart.style.right = "-100%"
-			}
-
-			render() {
-				return (
-					<div>
-						<div className="headered">
-							<a id="closeSideCart" onClick={this.closeSide} className="clickable">
-								x
-							</a>
-						</div>
-						<div className="content">
-							<h3 className="sideTitle">Like List</h3>
-							<div className="masonry-grid">
-								<LikedList list={this.props?.list}/>
-							</div>
-						</div>
-					</div>
-				)
-			}
-		}
-		class LikedList extends React.Component{
-			constructor(props){
-				super()
-			}
-
-			render() {
-				return (
-					<div> 
-					{
-						this.props.list?.map((e) => {
-							return <LikedItem key={e.image} name={e.name} image={e.image} />
-						})
-					}
-					</div>
-				)				
-			}
-		}
-
-		class Greetings extends React.Component{
-			render(){
-				return(
-					<div className="greeting">
-						Hello, {this.props.name}.
-						<br/>
 					</div>
 				)
 			}
@@ -205,6 +128,84 @@
 			}
 		}
 
+		class Side extends React.Component{
+			constructor(props){
+				super()
+				this.closeSide = this.closeSide.bind(this)
+			}
+
+			componentDidUpdate() {
+				console.log("Isi sidebar berubah:", this.props)
+			}
+
+			closeSide(){
+				const sidebar = document.getElementById("sideBar")
+				sidebar.style.right = "-100%"
+			}
+
+			render() {
+				return (
+					<div>
+						<div className="headered">
+							<a id="closeSideCart" onClick={this.closeSide} className="clickable">
+								x
+							</a>
+						</div>
+						<div className="content">
+							<h3 className="sideTitle">Like List</h3>
+							<div className="masonry-grid">
+								<LikedList list={this.props?.list}/>
+							</div>
+						</div>
+					</div>
+				)
+			}
+		}
+
+
+		class LikedItem extends React.Component{
+			constructor(props){
+				super()
+			}
+			render(){
+				return(
+					<div>
+						<img className="pic" src={this.props.image}/>
+					</div>
+				)
+			}
+		}
+
+		class LikedList extends React.Component{
+			constructor(props){
+				super()
+			}
+
+			render() {
+				return (
+					<div> 
+					{
+						this.props.list?.map((e) => {
+							return <LikedItem key={e.image} name={e.name} image={e.image} />
+						})
+					}
+					</div>
+				)				
+			}
+		}
+
+		class Greetings extends React.Component{
+			render(){
+				return(
+					<div className="greeting">
+						Hello, {this.props.name}.
+						<br/>
+					</div>
+				)
+			}
+		}
+
+
 		class App extends React.Component{
 			constructor(props){
 				super(props)
@@ -214,17 +215,15 @@
 				this.addToList = this.addToList.bind(this)
 
 				this.state = { 
-					//Objek account terdiri dari 3 property : username, secret, likedlist
-					accountList: [{username: "test", secret: "test", likedlist: []}],
-					curLoggedIn: -1, //Sesuaikan dengan indeks. -1 berarti tidak ada yang sedang login
-					dummyLikeList: [],
-					loggedIn: false,
-					name: this.props.name,
-					pictures: [], 
-					initPictures: [] 
+					//Setiap objek accountList terdiri dari 3 property : username, secret, likedlist
+					accountList: [{username: "dummy", secret: "dummy", likedlist: []}],
+					curLoggedIn: -1, //Nilai indeks pada accountList yang sedang login. -1 berarti tidak ada yang sedang login.
+					loggedIn: false, //Berfungsi untuk mengatur kondisi apakah user sudah login atau tidak.
+					name : "", //Menampung username yang sedang login
+					pictures: [], //Berfungsi untuk menampung object gambar dari API.
+					resetPictures: [] //Sama dengan pictures.
 				}
-				//Pictures merupakan kondisi yang dilihat user
-				//initPictures merupakan kondisi awal dimana semua pic memiliki nilai liked = false (isinya tidak akan diubah)
+
 				axios.get("https://picsum.photos/v2/list").then(
 					res => {
 						let newPicList = []
@@ -232,9 +231,14 @@
 							let picObject = {obj: val, isLiked: false}
 							newPicList.push(picObject)
 						})
-						this.setState({pictures: newPicList, initPictures: newPicList})
+						this.setState({pictures: newPicList, resetPictures: newPicList})
 					}
 				)
+
+				// Perbedaan pictures dengan resetPictures:
+				// pictures akan digunakan dalam menampilkan list gambar, dan perubahan prop isLiked akan dilakukan pada state ini.
+				/* resetPictures merupakan kondisi awal state pictures dimana property isLiked semua objek bernilai false. 
+				Array ini tidak akan diubah isinya, dan hanya digunakan ketika ingin melakukan reset pada isi state pictures.*/
 			}
 			
 			loginCheck(event){
@@ -245,7 +249,6 @@
 
 				if(username === "" || secret === ""){
 					alert("Isi username dan password terlebih dahulu")
-					return false
 				}
 				else{
 					let found = false
@@ -255,13 +258,13 @@
 							var areaLogin = document.getElementById("accArea")
 							var greet = document.getElementById("greetingArea")
 							areaLogin.style.display = "none"
-							 greet.style.display = "block"
-							this.setState({loggedIn: true, curLoggedIn: i, name: value.username})
+							greet.style.display = "block"
+							
 							found = true
 							alert("login berhasil")
 							
 							let copy = []
-							copy = [...this.state.initPictures]
+							copy = [...this.state.resetPictures]
 
 							value.likedlist.forEach((liked, i ) => {
 								let idx = this.state.pictures.findIndex( i => i.obj.id == liked.idimage)
@@ -272,6 +275,8 @@
 							this.setState({
 								pictures: copy
 							})
+
+							this.setState({loggedIn: true, curLoggedIn: i, name: value.username, pictures: copy})
 						}
 					})
 					if (!found){
@@ -288,7 +293,6 @@
 
 				if(username === "" || secret === ""){
 					alert("Isi username dan password terlebih dahulu")
-					return false
 				}
 				else{
 					const newUser = {
@@ -335,7 +339,6 @@
 
 				//pastikan nilai curLoggedIn dibalikkan ke -1
 				this.setState({loggedIn: false, curLoggedIn: -1, pictures: copy})
-				this.forceUpdate()
 
 				console.log(this.state.pictures)
 			}
@@ -415,14 +418,7 @@
 			}
 		}
 
-		ReactDOM.render(<App name="Guest"/>, document.getElementById("app"))
-		
-		//TASK 1.3
-		//TODO: 
-		//Buat sebuah komponen baru yang menampung list yang isinya komponen LikedItem.
-		//Komponen ini mengubah array likedlist dari account yang sedang login menjadi kumpulan komponen likedItem
-		//Tampilkan komponen tersebut di dalam komponen dengan nama Side.
-
+		ReactDOM.render(<App/>, document.getElementById("app"))
 	</script>
 </body>
 </html>
