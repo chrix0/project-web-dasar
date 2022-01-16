@@ -89,18 +89,22 @@
 			constructor(props){
 				super(props)
 			}
+			
 			render(){
 				return(
 					<div>
 						{
 							this.props.pictures.map((val) => {
-								return <PicBox key={val.obj.id} idimage={val.obj.id} name={val.obj.author} urlPic={val.obj.download_url} liked={val.isLiked} loggedIn={this.props.loggedIn} addToList={this.props.addToList}/>
+								return <PicBox key={val.obj.id} idimage={val.obj.id} name={val.obj.author} 
+								urlPic={val.obj.download_url} liked={val.isLiked} loggedIn={this.props.loggedIn} 
+								addToList={this.props.addToList}/>
 							})
 						}
 					</div>
 					
 				)
 			}
+
 			//Code setelah render
 			componentDidMount(){
 				setTimeout(() =>{
@@ -217,7 +221,8 @@
 				this.state = { 
 					//Setiap objek accountList terdiri dari 3 property : username, secret, likedlist
 					accountList: [{username: "dummy", secret: "dummy", likedlist: []}],
-					curLoggedIn: -1, //Nilai indeks pada accountList yang sedang login. -1 berarti tidak ada yang sedang login.
+					curLoggedIn: -1, //Nilai indeks pada accountList yang sedang login. 
+									 //-1 berarti tidak ada yang sedang login.
 					loggedIn: false, //Berfungsi untuk mengatur kondisi apakah user sudah login atau tidak.
 					name : "", //Menampung username yang sedang login
 					pictures: [], //Berfungsi untuk menampung object gambar dari API.
@@ -236,7 +241,8 @@
 				)
 
 				// Perbedaan pictures dengan resetPictures:
-				// pictures akan digunakan dalam menampilkan list gambar, dan perubahan prop isLiked akan dilakukan pada state ini.
+				// pictures akan digunakan dalam menampilkan list gambar, dan perubahan prop isLiked akan dilakukan 
+				// pada state ini.
 				/* resetPictures merupakan kondisi awal state pictures dimana property isLiked semua objek bernilai false. 
 				Array ini tidak akan diubah isinya, dan hanya digunakan ketika ingin melakukan reset pada isi state pictures.*/
 			}
@@ -271,9 +277,6 @@
 								if(idx != -1){
 									copy[idx].isLiked = true
 								}
-							})
-							this.setState({
-								pictures: copy
 							})
 
 							this.setState({loggedIn: true, curLoggedIn: i, name: value.username, pictures: copy})
@@ -337,7 +340,6 @@
 					copy[i].isLiked = false
 				})
 
-				//pastikan nilai curLoggedIn dibalikkan ke -1
 				this.setState({loggedIn: false, curLoggedIn: -1, pictures: copy})
 
 				console.log(this.state.pictures)
